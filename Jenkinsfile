@@ -1,46 +1,62 @@
 pipeline {
     agent any
-
-    tools {
-        nodejs 'NodeJS' // Use the name you configured in the tools
-    }
-
     
-    stage('Provide File Permissions') {
-        steps {
-            echo 'Installing npm and setting up permissions for build_frontend.sh'
-            // Check if the file exists before applying chmod
-            sh '''
-            if [ -f build_frontend.sh ]; then
-                echo "File build_frontend.sh exists. Applying permissions."
-                chmod +x build_frontend.sh
-                ./build_frontend.sh
-            else
-                echo "File build_frontend.sh not found!"
-                exit 1  // Fail the build if the file is not found
-            fi
-            '''
+    environment {
+        GIT_CRED = 'git-cred' // Set your GitHub credentials ID here
+    }
+    
+    stages {
+        stage('Checkout Code from GitHub') {
+            steps {
+                // Checkout frontend and backend code from GitHub
+                git credentialsId: "${GIT_CRED}", url: 'https://github.com/tohidhanfi20/SpringBoot-APP.git', branch: 'main'
             }
         }
-    stage('Build React App') {
-        steps {
-            dir('frontend') {
-                echo 'Installing npm and setting up permissions for build_frontend.sh'
-                sh "chmod +x build_frontend.sh"
-                sh "./build_frontend.sh"
-               }
-           }
-       }
-    }
-    post {
-        always {
-            echo 'Pipeline execution completed.'
+
+        stage('Build Frontend Docker Image') {
+            steps {
+                script {
+                    // Build the frontend Docker image
+                    docker.build('frontend-image', './frontend')
+                }
+            }
         }
-        success {
-            echo 'Build and deployment successful!'
+
+        stage('Build Backend Docker Image') {
+            steps {
+                script {
+                    // Build the backend Docker image
+                    docker.build('backend-image', './backend')
+                }
+            }
         }
-        failure {
-            echo 'Build or deployment failed.'
+
+        stage('Run Frontend Docker Container') {
+            steps {
+                script {
+                    // Run frontend container
+                    docker.run('frontend-image', '-d -p 8080:80')
+                }
+            }
+        }
+
+        stage('Run Backend Docker Container') {
+            steps {
+                script {
+                    // Run backend container
+                    docker.run('backend-image', '-d -p 8081:8081')
+                }
+            }
+        }
+
+        stage('Verify Application') {
+            steps {
+                script {
+                    // Check if frontend and backend are running (this can be enhanced with more checks)
+                    sh 'curl http://localhost:8080'  // Frontend check
+                    sh 'curl http://localhost:8081'  // Backend check
+                }
+            }
         }
     }
 }
