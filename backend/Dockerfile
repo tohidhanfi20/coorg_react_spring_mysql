@@ -1,8 +1,5 @@
 # Step 1: Build the Spring Boot application
-FROM openjdk:17-jdk-slim AS build
-
-# Install Maven
-RUN apt-get update && apt-get install -y maven && apt-get clean
+FROM maven:3.8-openjdk-17 AS build
 
 # Set the working directory
 WORKDIR /app
