@@ -4,7 +4,7 @@ FROM maven:3.8-openjdk-17 AS build
 # Set the working directory
 WORKDIR /app
 
-# Copy pom.xml and install dependencies
+# Copy the Maven project files
 COPY pom.xml .
 RUN mvn dependency:go-offline
 
@@ -14,14 +14,14 @@ COPY src ./src
 # Build the Spring Boot application
 RUN mvn clean package -DskipTests
 
-# Step 2: Run the Spring Boot application
+# Step 2: Create a lightweight image with the built application
 FROM openjdk:17-jdk-slim
 
 # Copy the JAR file from the build stage
-COPY --from=build /app/target/sak-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /app/target/sak-0.0.1-SNAPSHOT.jar /app.jar
 
-# Expose port for Spring Boot app
+# Expose the application port
 EXPOSE 8081
 
-# Command to run the Spring Boot application
+# Run the application
 ENTRYPOINT ["java", "-jar", "/app.jar"]
