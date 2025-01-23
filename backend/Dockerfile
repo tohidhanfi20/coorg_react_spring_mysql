@@ -20,7 +20,7 @@ RUN mvn clean package -DskipTests
 FROM openjdk:17-jdk-slim
 
 # Set the location of the JAR file
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /target/*.jar app.jar
 
 # Expose port for Spring Boot app
 EXPOSE 8081
