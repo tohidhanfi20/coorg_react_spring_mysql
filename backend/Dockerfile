@@ -8,11 +8,17 @@ WORKDIR /app
 COPY pom.xml .
 RUN mvn dependency:go-offline
 
+# List files in /app to verify that the pom.xml is there
+RUN ls -l /app
+
 # Copy the source code
 COPY src ./src
 
+# List files in /app/src to verify that the src folder is copied
+RUN ls -l /app/src
+
 # Build the application (use install instead of package for full build)
-RUN mvn clean install -DskipTests
+RUN mvn clean install -DskipTests -X  # Enable debug output
 
 # Step 2: Run the Spring Boot application
 FROM openjdk:17-jdk-slim
