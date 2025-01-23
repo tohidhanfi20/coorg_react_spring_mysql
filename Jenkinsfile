@@ -8,23 +8,23 @@ pipeline {
     stages {
         stage('Checkout Code from GitHub') {
             steps {
-                // Checkout code from GitHub
-                git credentialsId: "${GIT_CRED}", url: 'https://github.com/tohidhanfi20/coorg_react_spring_mysql.git', branch: 'main'
+                script {
+                    // Checkout code from GitHub
+                    git credentialsId: "${GIT_CRED}", url: 'https://github.com/tohidhanfi20/coorg_react_spring_mysql.git', branch: 'main'
+                }
             }
         }
-
         stage('Build and Run Frontend') {
             steps {
                 script {
                     // Build frontend Docker image
                     docker.build('frontend-image', './frontend')
 
-                    // Run the frontend container
-                    docker.image('frontend-image').run('-d -p 8080:80')
+                    // Run the frontend container on a different port (e.g., 8082)
+                    docker.image('frontend-image').run('-d -p 8082:80')
                 }
             }
         }
-
         stage('Build and Run Backend') {
             steps {
                 script {
