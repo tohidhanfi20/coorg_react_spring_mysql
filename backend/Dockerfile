@@ -1,5 +1,5 @@
-# Use OpenJDK base image
-FROM openjdk:17-jdk-slim AS build
+# Step 1: Build the Spring Boot application
+FROM maven:3.8.7-eclipse-temurin-17 AS build
 
 # Set the working directory inside the container
 WORKDIR /app
