@@ -1,15 +1,13 @@
 package com.coorg.sak;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
-@RestController
-@RequestMapping("/api")
-public class HealthController {
+@SpringBootTest
+class SakApplicationTests {
 
-    @GetMapping("/health")
-    public String healthCheck() {
-        return "Backend is running!";
-    }
+	@Test
+	void contextLoads() {
+	}
+
 }
