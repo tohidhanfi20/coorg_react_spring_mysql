@@ -1,35 +1,28 @@
-# Step 1: Build the Spring Boot application using Maven
-FROM maven:3.8-openjdk-17 AS build
+# Use OpenJDK base image
+FROM openjdk:17-jdk-slim AS build
 
-# Set the working directory
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy pom.xml and download dependencies
+# Copy pom.xml and install dependencies (Maven build)
 COPY pom.xml .
-RUN mvn dependency:go-offline
 
-# List files in /app to verify that the pom.xml is there
-RUN ls -l /app
+# Download dependencies (this layer will be cached if unchanged)
+RUN mvn dependency:go-offline
 
 # Copy the source code
 COPY src ./src
 
-# List files in /app/src to verify the src folder is copied
-RUN ls -l /app/src
-
-# Build the Spring Boot application (use install instead of package for full build)
-RUN mvn clean install -DskipTests -X  # Enable debug output
-
-# Verify that the JAR file is in the target directory
-RUN ls -l /app/target
+# Build the Spring Boot application (package JAR)
+RUN mvn clean package -DskipTests
 
 # Step 2: Run the Spring Boot application
 FROM openjdk:17-jdk-slim
 
-# Copy the JAR file from the build stage
+# Set the location of the JAR file
 COPY --from=build /app/target/*.jar app.jar
 
-# Expose port for the Spring Boot application
+# Expose port for Spring Boot app
 EXPOSE 8081
 
 # Command to run the Spring Boot application
