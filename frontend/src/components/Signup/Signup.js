@@ -10,7 +10,7 @@ const Signup = () => {
     setUser({ ...user, [name]: value });
   };
 
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8081/api';
+  const API_URL = process.env.REACT_APP_API_URL || 'http://13.234.225.55:8081/api';
 
   const handleSubmit = (e) => {
     e.preventDefault();
