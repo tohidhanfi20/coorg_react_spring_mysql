@@ -1,60 +1,38 @@
 pipeline {
     agent any
-    
+
     environment {
-        GIT_CRED = 'git-cred' // Set your GitHub credentials ID here
+        GIT_CRED = 'git-cred' // GitHub token credentials ID
     }
-    
+
     stages {
         stage('Checkout Code from GitHub') {
             steps {
-                // Checkout frontend and backend code from GitHub
-                git credentialsId: "${GIT_CRED}", url: 'https://github.com/tohidhanfi20/coorg_react_spring_mysql.git', branch: 'main'
+                // Checkout code from GitHub
+                git credentialsId: "${GIT_CRED}", url: 'https://github.com/tohidhanfi20/SpringBoot-APP.git', branch: 'main'
             }
         }
 
-        stage('Build Frontend Docker Image') {
+        stage('Build and Run Frontend') {
             steps {
                 script {
-                    // Build the frontend Docker image
+                    // Build frontend Docker image
                     docker.build('frontend-image', './frontend')
+
+                    // Run the frontend container
+                    docker.image('frontend-image').run('-d -p 8080:80')
                 }
             }
         }
 
-        stage('Build Backend Docker Image') {
+        stage('Build and Run Backend') {
             steps {
                 script {
-                    // Build the backend Docker image
+                    // Build backend Docker image
                     docker.build('backend-image', './backend')
-                }
-            }
-        }
 
-        stage('Run Frontend Docker Container') {
-            steps {
-                script {
-                    // Run frontend container
-                    docker.run('frontend-image', '-d -p 8080:80')
-                }
-            }
-        }
-
-        stage('Run Backend Docker Container') {
-            steps {
-                script {
-                    // Run backend container
-                    docker.run('backend-image', '-d -p 8081:8081')
-                }
-            }
-        }
-
-        stage('Verify Application') {
-            steps {
-                script {
-                    // Check if frontend and backend are running (this can be enhanced with more checks)
-                    sh 'curl http://localhost:8080'  // Frontend check
-                    sh 'curl http://localhost:8081'  // Backend check
+                    // Run the backend container
+                    docker.image('backend-image').run('-d -p 8081:8081')
                 }
             }
         }
