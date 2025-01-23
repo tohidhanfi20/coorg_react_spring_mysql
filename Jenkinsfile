@@ -9,7 +9,7 @@ pipeline {
         stage('Checkout Code from GitHub') {
             steps {
                 // Checkout code from GitHub
-                git credentialsId: "${GIT_CRED}", url: 'https://github.com/tohidhanfi20/SpringBoot-APP.git', branch: 'main'
+                git credentialsId: "${GIT_CRED}", url: 'https://github.com/tohidhanfi20/coorg_react_spring_mysql.git', branch: 'main'
             }
         }
 
